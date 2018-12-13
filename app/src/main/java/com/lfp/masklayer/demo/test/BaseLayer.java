@@ -33,7 +33,7 @@ public abstract class BaseLayer extends MaskLayer implements View.OnClickListene
 
     @Override
     protected View onCreateView(LayoutInflater inflater, ViewGroup parent) {
-        return inflater.inflate(R.layout.layer_test, parent , true);
+        return inflater.inflate(R.layout.layer_test, parent , false);
     }
 
 
