@@ -35,15 +35,30 @@ public class MaskLayerManager {
         disabledWindowsAnimation();
     }
 
+    /**
+     * 获得上下文
+     *
+     * @return The context
+     */
 
     public Context getContext() {
         return mContext;
     }
 
     /**
-     * 显示蒙层
+     * 显示一个蒙层
      *
      * @param layer The layer
+     */
+    public final void show(MaskLayer layer) {
+        show(layer, MaskLayer.REQUEST_NO);
+    }
+
+    /**
+     * 显示一个蒙层
+     *
+     * @param layer       The layer
+     * @param requestcode 请求码
      */
     public final void show(MaskLayer layer, int requestcode) {
         layer.mRequestCode = requestcode;
@@ -69,7 +84,7 @@ public class MaskLayerManager {
     /**
      * 关闭蒙层
      *
-     * @param layer
+     * @param layer The layer
      */
     private final void close(MaskLayer layer) {
         layer.mOnDismissCall = null;
@@ -89,22 +104,6 @@ public class MaskLayerManager {
             }
         }
 
-//        int count = getLayerCount();
-//        if (count > 0) {
-//
-//        }
-//        if (layer == peek()) { /*关闭蒙层为顶层蒙层，处理前一层的生命周期*/
-//            pop();
-//            if (getLayerCount() > 0) {
-//                MaskLayer top = peek();
-//                top.callResume();
-//                if (layer.mResultCode != MaskLayer.REQUEST_NO)
-//                    top.onRequestResult(layer.mRequestCode, layer.mResultCode, layer.mResultIntent);
-//            }
-//        } else { /*非顶层蒙层，直接关闭蒙城，不关联其他层的生命周期*/
-//            mOpenLayer.remove(layer);
-//        }
-
 
         if (getLayerCount() == 0 && isEneblaeWindowsAnimation()) {
             if (mContext instanceof Activity)
@@ -112,6 +111,11 @@ public class MaskLayerManager {
         }
     }
 
+    /**
+     * 获得Windows动画管理器
+     *
+     * @return Windows动画管理器
+     */
     public WindowsAnimationManager getWindowsAnimationManager() {
         if (mWindowsAnimationManager == null)
             mWindowsAnimationManager = new WindowsAnimationManager();
@@ -121,7 +125,7 @@ public class MaskLayerManager {
     /**
      * 当需要显示蒙层的时候，制定蒙层显示的规则
      *
-     * @param layer
+     * @param layer 被显示的layer
      */
     protected void onShow(MaskLayer layer) {
         if (mContext instanceof Activity) {
@@ -134,7 +138,7 @@ public class MaskLayerManager {
     /**
      * 获得栈中蒙层数量
      *
-     * @return
+     * @return The count
      */
     private int getLayerCount() {
         return mOpenLayer.size();
@@ -143,20 +147,22 @@ public class MaskLayerManager {
     /**
      * 查看顶部蒙层
      *
-     * @return
+     * @return The top layer
      */
     private MaskLayer peek() {
         if (mOpenLayer.isEmpty()) return null;
         return mOpenLayer.peek();
     }
 
+    /**
+     * 提交一个蒙层给管理器
+     *
+     * @param layer The layer
+     * @return The layer
+     */
     private MaskLayer push(MaskLayer layer) {
         layer.mOnDismissCall = mOnDismissCall;
         return mOpenLayer.push(layer);
-    }
-
-    private MaskLayer pop() {
-        return mOpenLayer.pop();
     }
 
     /**
@@ -176,7 +182,7 @@ public class MaskLayerManager {
     /**
      * 判断是否需要显示窗口动画
      *
-     * @return
+     * @return 是否显示窗口动画
      */
     public boolean isEneblaeWindowsAnimation() {
         return (mFlag & FLAG_WINDOWS_ANIMATION_DISABLED) != 0;

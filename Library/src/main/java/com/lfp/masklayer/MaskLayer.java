@@ -7,12 +7,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.PopupWindow;
 
 /**
  * <pre>
  * Tip:
- *      蒙层
+ *      创建一个基于PopupWindow的蒙层
  *
  * Function:
  *
@@ -63,6 +64,11 @@ public abstract class MaskLayer extends PopupWindow {
 
     }
 
+    /**
+     * 设置蒙层管理器
+     *
+     * @param manager 蒙层管理器
+     */
     public void setMaskLayerManager(MaskLayerManager manager) {
         this.mMaskLayerManager = manager;
     }
@@ -70,7 +76,7 @@ public abstract class MaskLayer extends PopupWindow {
     /**
      * 获得蒙层管理器
      *
-     * @return
+     * @return 蒙层管理器
      */
     public MaskLayerManager getMaskLayerManager() {
         if (mMaskLayerManager == null) {
@@ -83,7 +89,7 @@ public abstract class MaskLayer extends PopupWindow {
     /**
      * 生成一个默认的蒙层管理器
      *
-     * @return
+     * @return 蒙层管理器
      */
     protected MaskLayerManager generateMaskLayerManager() {
         return new MaskLayerManager(mContext);
@@ -91,7 +97,7 @@ public abstract class MaskLayer extends PopupWindow {
 
 
     /**
-     * 初始化蒙层
+     * 初始化蒙层 ，这里配置了PopupWindow的一些默认行为，这些行为可以在OnInit()中被改变
      */
     final void init() {
         mState = STATE.INIT;
@@ -109,11 +115,26 @@ public abstract class MaskLayer extends PopupWindow {
 
         onInit();
 
-        View view = onCreateView(LayoutInflater.from(mContext));
-        setContentView(view);
+        ViewGroup rootView = getRootView(getContext());
+        rootView.setLayoutParams(new ViewGroup.LayoutParams(getWidth(), getHeight()));
+
+        View view = onCreateView(LayoutInflater.from(mContext), rootView);
+        rootView.addView(view);
+
+        setContentView(rootView);
         onViewCreate(view);
 
         mIsInit = true;
+    }
+
+    FrameLayout mPrentView; //跟布局
+
+    /*获得一个跟布局，为了正确的显示ContentView*/
+    protected ViewGroup getRootView(Context context) {
+        if (mPrentView == null) {
+            mPrentView = new FrameLayout(context);
+        }
+        return mPrentView;
     }
 
     /**
@@ -126,28 +147,39 @@ public abstract class MaskLayer extends PopupWindow {
     }
 
     /**
-     * 当初始化蒙层的时候
+     * 当初始化蒙层的时候被调用，在这里做一些PopupWindow行为的配置
      */
     protected void onInit() {
 
     }
 
     /**
-     * 返回蒙层的View
+     * 或蒙层的视图，这个视图将被显示在PopupWindow上
+     *
+     * @param inflater 布局加载器
+     * @param parent   蒙层的跟布局
+     * @return 蒙层的视图
      */
-    protected abstract View onCreateView(LayoutInflater inflater);
+    protected abstract View onCreateView(LayoutInflater inflater, ViewGroup parent);
 
+    /**
+     * 当视图被创建，并且已绑定到PopupWindow上的时候被调用
+     *
+     * @param view 通过onCreateView()获得的视图
+     */
     protected void onViewCreate(View view) {
     }
 
+    /**
+     * 获得上下文
+     *
+     * @return 上下文
+     */
     protected Context getContext() {
         return mContext;
     }
 
 
-    /**
-     * 当蒙层准备显示的时候
-     */
     final void callStart() {
         mState = STATE.START;
         onStart();
@@ -163,25 +195,34 @@ public abstract class MaskLayer extends PopupWindow {
         onPause();
     }
 
-    /**
-     * 当蒙层关闭的时候
-     */
     final void callDismiss() {
         mState = STATE.DISMISS;
         onDismiss();
     }
 
+    /**
+     * 当Show()被调用的时候
+     */
     protected void onStart() {
     }
 
+    /**
+     * 当蒙层现在在前台的时候
+     */
     protected void onResume() {
 
     }
 
+    /**
+     * 当另外一个蒙层被打开，当前蒙层被遮挡的时候
+     */
     protected void onPause() {
 
     }
 
+    /**
+     * 当蒙层被关闭的时候
+     */
     protected void onDismiss() {
 
     }
@@ -202,20 +243,32 @@ public abstract class MaskLayer extends PopupWindow {
         mOnDismissListener = onDismissListener;
     }
 
+    /**
+     * 设置tag
+     *
+     * @param tag The tag
+     */
     public void setTag(Object tag) {
         this.mTag = tag;
     }
 
+    /**
+     * 获得tag
+     *
+     * @return The tag
+     */
     public Object getTag() {
         return this.mTag;
     }
 
     /**
-     * 回调
+     * 通过show(layer,requestcode)方法打开了一个蒙层，并且requestcode != -1。
+     * 在打开蒙层关闭，当前蒙层显示的时候回调该方法。
+     * 打开的蒙层通过setResult方法设置回复的信息
      *
-     * @param requestcode
-     * @param resultcode
-     * @param intent
+     * @param requestcode 请求码
+     * @param resultcode  回复码
+     * @param intent      回复数据
      */
     protected void onRequestResult(int requestcode, int resultcode, Intent intent) {
     }
@@ -227,19 +280,41 @@ public abstract class MaskLayer extends PopupWindow {
         show(this);
     }
 
+    /**
+     * 显示一个蒙层
+     *
+     * @param layer The layer
+     */
     public void show(MaskLayer layer) {
         show(layer, REQUEST_NO);
     }
 
+    /**
+     * 通过请求码显示一个蒙层
+     *
+     * @param layer       The layer
+     * @param requestcode 请求码
+     */
     public void show(MaskLayer layer, int requestcode) {
         layer.setMaskLayerManager(getMaskLayerManager());
         layer.getMaskLayerManager().show(layer, requestcode);
     }
 
+    /**
+     * 设置回复数据
+     *
+     * @param resultcode 回复码
+     */
     public void setResult(int resultcode) {
         setResult(resultcode, null);
     }
 
+    /**
+     * 设置回复数据
+     *
+     * @param resultcode 回复码
+     * @param intent     回复数据
+     */
     public void setResult(int resultcode, Intent intent) {
         this.mResultCode = resultcode;
         this.mResultIntent = intent;

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.lfp.masklayer.MaskLayer;
@@ -31,8 +32,8 @@ public abstract class BaseLayer extends MaskLayer implements View.OnClickListene
 
 
     @Override
-    protected View onCreateView(LayoutInflater inflater) {
-        return inflater.inflate(R.layout.layer_test, null);
+    protected View onCreateView(LayoutInflater inflater, ViewGroup parent) {
+        return inflater.inflate(R.layout.layer_test, parent , true);
     }
 
 
