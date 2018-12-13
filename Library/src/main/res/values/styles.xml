@@ -1,0 +1,14 @@
+<resources>
+
+    <!--上滑进入，下滑隐藏-->
+    <style name="lib_PopupAnimation_Translation_UpDown">
+        <item name="android:windowEnterAnimation">@animator/lib_popup_enter_animation_translation_up</item>
+        <item name="android:windowExitAnimation">@animator/lib_popup_exit_animation_translation_down</item>
+    </style>
+
+    <!--标题菜单动画-->
+    <style name="lib_PopupAnimation_TitleMenu">
+        <item name="android:windowEnterAnimation">@animator/lib_popup_enter_animation_titlemenu</item>
+        <item name="android:windowExitAnimation">@animator/lib_popup_exit_animation_titlemenu</item>
+    </style>
+</resources>
