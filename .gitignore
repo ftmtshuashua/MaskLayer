@@ -24,14 +24,10 @@ hs_err_pid*
 
 
 *.iml
-.gradle
-.idea
-/local.properties
-.DS_Store
+.gradle/
+.idea/
+gradle/
+local.properties
 /build
-/captures
-.externalNativeBuild
-toolkit/local.properties
-toolkit/info
-toolkit/bintrayUpload.gradle
-
+app/build
+Library/build
