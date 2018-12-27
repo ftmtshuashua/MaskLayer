@@ -38,6 +38,6 @@ public class Layer1 extends BaseLayer {
 
     @Override
     public void onClick(View v) {
-        show(new Layer2(getContext()), 666);
+        startLayer(new Layer2(getContext()), 666);
     }
 }

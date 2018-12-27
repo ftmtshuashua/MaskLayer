@@ -277,7 +277,7 @@ public abstract class MaskLayer extends PopupWindow {
      * 显示当前图层
      */
     public void show() {
-        show(this);
+        getMaskLayerManager().show(this);
     }
 
     /**
@@ -285,8 +285,8 @@ public abstract class MaskLayer extends PopupWindow {
      *
      * @param layer The layer
      */
-    public void show(MaskLayer layer) {
-        show(layer, REQUEST_NO);
+    public void startLayer(MaskLayer layer) {
+        startLayer(layer, REQUEST_NO);
     }
 
     /**
@@ -295,9 +295,10 @@ public abstract class MaskLayer extends PopupWindow {
      * @param layer       The layer
      * @param requestcode 请求码
      */
-    public void show(MaskLayer layer, int requestcode) {
-        layer.setMaskLayerManager(getMaskLayerManager());
-        layer.getMaskLayerManager().show(layer, requestcode);
+    public void startLayer(MaskLayer layer, int requestcode) {
+        final MaskLayerManager maskLayerManager = getMaskLayerManager();
+        layer.setMaskLayerManager(maskLayerManager);
+        maskLayerManager.show(layer, requestcode);
     }
 
     /**
