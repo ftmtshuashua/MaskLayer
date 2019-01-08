@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.view.Gravity;
 
-import com.lfp.masklayer.utils.WindowsAnimationManager;
-
 import java.util.Stack;
 
 /**
@@ -20,19 +18,14 @@ import java.util.Stack;
  */
 public class MaskLayerManager {
 
-    /**
-     * 关闭窗口动画
-     */
-    public static final int FLAG_WINDOWS_ANIMATION_DISABLED = 0x00000001;
-
     WindowsAnimationManager mWindowsAnimationManager;
     Context mContext;
     Stack<MaskLayer> mOpenLayer = new Stack<>();//蒙层栈管理
-    int mFlag;
+
 
     public MaskLayerManager(Context context) {
         this.mContext = context;
-        disabledWindowsAnimation();
+
     }
 
     /**
@@ -64,10 +57,12 @@ public class MaskLayerManager {
         layer.mRequestCode = requestcode;
 
         final int layercount = getLayerCount();
-        if (layercount == 0 && isEneblaeWindowsAnimation()) {
-            if (mContext instanceof Activity)
-                getWindowsAnimationManager().setAnimatinoToAlpah((Activity) mContext, 0.3f);
+        if (layercount == 0) { //展示第一个画面
+            if (mWindowsAnimationManager != null) {
+                mWindowsAnimationManager.setAlpah(0.6180339887f);
+            }
         }
+
 
         if (layercount > 0) {
             peek().callPause();
@@ -104,23 +99,23 @@ public class MaskLayerManager {
             }
         }
 
-
-        if (getLayerCount() == 0 && isEneblaeWindowsAnimation()) {
-            if (mContext instanceof Activity)
-                getWindowsAnimationManager().setAnimatinoToAlpah((Activity) mContext, 1f);
+        if (getLayerCount() == 0) {
+            if (mWindowsAnimationManager != null) {
+                mWindowsAnimationManager.setAlpah(1f);
+            }
         }
     }
 
     /**
-     * 获得Windows动画管理器
-     *
-     * @return Windows动画管理器
+     * 设置窗体动画
      */
-    public WindowsAnimationManager getWindowsAnimationManager() {
-        if (mWindowsAnimationManager == null)
-            mWindowsAnimationManager = new WindowsAnimationManager();
-        return mWindowsAnimationManager;
+    public void setWindowsAnimation(boolean enable) {
+        if (enable) {
+            if (mContext instanceof Activity)
+                mWindowsAnimationManager = new WindowsAnimationManager((Activity) mContext);
+        } else mWindowsAnimationManager = null;
     }
+
 
     /**
      * 当需要显示蒙层的时候，制定蒙层显示的规则
@@ -163,29 +158,6 @@ public class MaskLayerManager {
     private MaskLayer push(MaskLayer layer) {
         layer.mOnDismissCall = mOnDismissCall;
         return mOpenLayer.push(layer);
-    }
-
-    /**
-     * 禁用窗口动画
-     */
-    public void disabledWindowsAnimation() {
-        mFlag |= FLAG_WINDOWS_ANIMATION_DISABLED;
-    }
-
-    /**
-     * 启用窗口动画
-     */
-    public void enabileWindowsAnimation() {
-        mFlag &= ~FLAG_WINDOWS_ANIMATION_DISABLED;
-    }
-
-    /**
-     * 判断是否需要显示窗口动画
-     *
-     * @return 是否显示窗口动画
-     */
-    public boolean isEneblaeWindowsAnimation() {
-        return (mFlag & FLAG_WINDOWS_ANIMATION_DISABLED) != 0;
     }
 
     /**

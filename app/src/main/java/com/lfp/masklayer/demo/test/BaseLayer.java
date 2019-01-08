@@ -109,4 +109,5 @@ public abstract class BaseLayer extends MaskLayer implements View.OnClickListene
             mTV_Msg.append("\n");
         }
     }
+
 }

@@ -92,7 +92,9 @@ public abstract class MaskLayer extends PopupWindow {
      * @return 蒙层管理器
      */
     protected MaskLayerManager generateMaskLayerManager() {
-        return new MaskLayerManager(mContext);
+        MaskLayerManager manager = new MaskLayerManager(mContext);
+        manager.setWindowsAnimation(true);
+        return manager;
     }
 
 
